@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      - '5672:5672'  # для связи с RabbitMQ
+      - '15672:15672'  # для интерфейса управления RabbitMQ
+    networks:
+      - microservices_network
+
+  features:
+    build:
+      context: ./features
+      dockerfile: Dockerfile.features
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservices_network
+
+  metric:
+    build:
+      context: ./metric
+      dockerfile: Dockerfile.metric
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservices_network
+
+  plot:
+    build:
+      context: ./plot
+      dockerfile: Dockerfile.plot
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservices_network
+
+networks:
+  microservices_network:
+    driver: bridge
